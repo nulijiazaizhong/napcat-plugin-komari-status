@@ -33,8 +33,15 @@ function sanitizeConfig(raw: unknown): PluginConfig {
 
     if (typeof raw.enabled === 'boolean') out.enabled = raw.enabled;
     if (typeof raw.debug === 'boolean') out.debug = raw.debug;
-    if (typeof raw.commandPrefix === 'string') out.commandPrefix = raw.commandPrefix;
-    if (typeof raw.cooldownSeconds === 'number') out.cooldownSeconds = raw.cooldownSeconds;
+    if (typeof raw.komariUrl === 'string') out.komariUrl = raw.komariUrl;
+    if (typeof raw.komariToken === 'string') out.komariToken = raw.komariToken;
+    if (typeof raw.imageOutput === 'boolean') out.imageOutput = raw.imageOutput;
+    if (typeof raw.darkTheme === 'boolean') out.darkTheme = raw.darkTheme;
+    if (typeof raw.viewportWidth === 'number') out.viewportWidth = raw.viewportWidth;
+    if (typeof raw.triggerNodes === 'string') out.triggerNodes = raw.triggerNodes;
+    if (typeof raw.triggerRealtime === 'string') out.triggerRealtime = raw.triggerRealtime;
+    if (typeof raw.triggerPublic === 'string') out.triggerPublic = raw.triggerPublic;
+    if (typeof raw.triggerVersion === 'string') out.triggerVersion = raw.triggerVersion;
 
     // 群配置清洗
     if (isObject(raw.groupConfigs)) {
@@ -48,7 +55,7 @@ function sanitizeConfig(raw: unknown): PluginConfig {
         }
     }
 
-    // TODO: 在这里添加你的配置项清洗逻辑
+    // 无其他配置项
 
     return out;
 }

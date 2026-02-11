@@ -18,13 +18,26 @@ export interface PluginConfig {
     enabled: boolean;
     /** 调试模式：启用后输出详细日志 */
     debug: boolean;
-    /** 触发命令前缀，默认为 #cmd */
-    commandPrefix: string;
-    /** 同一命令请求冷却时间（秒），0 表示不限制 */
-    cooldownSeconds: number;
+    /** Komari 面板地址，如 https://status.example.com */
+    komariUrl: string;
+    /** API Token 或 Session Token（可选） */
+    komariToken?: string;
+    /** 是否以图片形式发送（NapCat 端暂以文本输出代替） */
+    imageOutput: boolean;
+    /** 深色主题（用于前端或图片渲染） */
+    darkTheme: boolean;
+    /** 视口宽度（用于图片渲染） */
+    viewportWidth: number;
+    /** 节点状态触发词（正则） */
+    triggerNodes: string;
+    /** 实时状态触发词（正则） */
+    triggerRealtime: string;
+    /** 公开设置触发词（正则） */
+    triggerPublic: string;
+    /** 版本信息触发词（正则） */
+    triggerVersion: string;
     /** 按群的单独配置 */
     groupConfigs: Record<string, GroupConfig>;
-    // TODO: 在这里添加你的插件配置项
 }
 
 /**

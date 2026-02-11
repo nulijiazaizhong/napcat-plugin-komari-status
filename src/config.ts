@@ -10,10 +10,16 @@ import type { PluginConfig } from './types';
 export const DEFAULT_CONFIG: PluginConfig = {
     enabled: true,
     debug: false,
-    commandPrefix: '#cmd',
-    cooldownSeconds: 60,
+    komariUrl: '',
+    komariToken: '',
+    imageOutput: false,
+    darkTheme: true,
+    viewportWidth: 600,
+    triggerNodes: '查询\\s*Komari\\s*节点状态',
+    triggerRealtime: '查询\\s*Komari\\s*实时状态',
+    triggerPublic: '查询\\s*Komari\\s*公开设置',
+    triggerVersion: '查询\\s*Komari\\s*版本信息',
     groupConfigs: {},
-    // TODO: 在这里添加你的默认配置值
 };
 
 /**
@@ -33,19 +39,21 @@ export function buildConfigSchema(ctx: NapCatPluginContext): PluginConfigSchema 
     return ctx.NapCatConfig.combine(
         // 插件信息头部
         ctx.NapCatConfig.html(`
-            <div style="padding: 16px; background: #FB7299; border-radius: 12px; margin-bottom: 20px; color: white;">
-                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 600;">插件模板</h3>
-                <p style="margin: 0; font-size: 13px; opacity: 0.85;">NapCat 插件开发模板，请根据需要修改配置</p>
+            <div style="padding: 16px; background: linear-gradient(90deg,#4f46e5,#0ea5e9); border-radius: 12px; margin-bottom: 20px; color: white;">
+                <h3 style="margin: 0 0 6px 0; font-size: 18px; font-weight: 600;">Komari 状态监控</h3>
+                <p style="margin: 0; font-size: 13px; opacity: 0.85;">查询节点列表、实时状态、公开设置和版本信息</p>
             </div>
         `),
-        // 全局开关
-        ctx.NapCatConfig.boolean('enabled', '启用插件', true, '是否启用此插件的功能'),
-        // 调试模式
-        ctx.NapCatConfig.boolean('debug', '调试模式', false, '启用后将输出详细的调试日志'),
-        // 命令前缀
-        ctx.NapCatConfig.text('commandPrefix', '命令前缀', '#cmd', '触发命令的前缀，默认为 #cmd'),
-        // 冷却时间
-        ctx.NapCatConfig.number('cooldownSeconds', '冷却时间（秒）', 60, '同一命令请求冷却时间，0 表示不限制')
-        // TODO: 在这里添加你的配置项
+        ctx.NapCatConfig.boolean('enabled', '启用插件', true, '是否启用此插件的功能', true),
+        ctx.NapCatConfig.boolean('debug', '调试模式', false, '启用后将输出详细的调试日志', true),
+        ctx.NapCatConfig.text('komariUrl', 'Komari 服务器地址', '', '如 https://status.example.com', true),
+        ctx.NapCatConfig.text('komariToken', 'API Token（可选）', '', 'API Key 或 Session Token', true),
+        ctx.NapCatConfig.boolean('imageOutput', '以图片形式发送', false, 'NapCat 暂以文本输出代替', true),
+        ctx.NapCatConfig.boolean('darkTheme', '深色主题', true, '用于前端/图片渲染', true),
+        ctx.NapCatConfig.number('viewportWidth', '图片宽度', 600, '用于图片渲染的视口宽度', true),
+        ctx.NapCatConfig.text('triggerNodes', '节点状态指令(正则)', DEFAULT_CONFIG.triggerNodes, '自定义触发指令', true),
+        ctx.NapCatConfig.text('triggerRealtime', '实时状态指令(正则)', DEFAULT_CONFIG.triggerRealtime, '自定义触发指令', true),
+        ctx.NapCatConfig.text('triggerPublic', '公开设置指令(正则)', DEFAULT_CONFIG.triggerPublic, '自定义触发指令', true),
+        ctx.NapCatConfig.text('triggerVersion', '版本信息指令(正则)', DEFAULT_CONFIG.triggerVersion, '自定义触发指令', true)
     );
 }

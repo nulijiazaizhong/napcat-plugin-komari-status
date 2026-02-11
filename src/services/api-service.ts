@@ -22,6 +22,7 @@ import type {
     PluginHttpResponse
 } from 'napcat-types/napcat-onebot/network/plugin/types';
 import { pluginState } from '../core/state';
+import { getNodesStatus, getPublicSettings, getVersionInfo, getRealtimeStatus } from './komari';
 
 /**
  * 注册 API 路由
@@ -140,6 +141,27 @@ export function registerApiRoutes(ctx: NapCatPluginContext): void {
     });
 
     // TODO: 在这里添加你的自定义 API 路由
+    router.getNoAuth('/komari/nodes', async (_req, res) => {
+        const resp = await getNodesStatus();
+        if ('error' in resp) return res.status(500).json({ code: -1, message: resp.error });
+        res.json({ code: 0, data: resp.text });
+    });
+
+    router.getNoAuth('/komari/public', async (_req, res) => {
+        const text = await getPublicSettings();
+        res.json({ code: 0, data: text });
+    });
+
+    router.getNoAuth('/komari/version', async (_req, res) => {
+        const text = await getVersionInfo();
+        res.json({ code: 0, data: text });
+    });
+
+    router.getNoAuth('/komari/realtime', async (_req, res) => {
+        const resp = await getRealtimeStatus();
+        if ('error' in resp) return res.status(500).json({ code: -1, message: resp.error });
+        res.json({ code: 0, data: resp.text });
+    });
 
     ctx.logger.debug('API 路由注册完成');
 }

@@ -116,9 +116,9 @@ export default function StatusPage({ status, onRefresh }: StatusPageProps) {
                     </button>
                 </div>
                 <div className="space-y-3">
-                    <InfoRow label="命令前缀" value={config.commandPrefix} />
-                    <InfoRow label="冷却时间" value={`${config.cooldownSeconds} 秒`} />
-                    <InfoRow label="调试模式" value={config.debug ? '开启' : '关闭'} />
+                    <InfoRow label="Komari 地址" value={config.komariUrl || '-'} />
+                    <InfoRow label="图片输出" value={config.imageOutput ? '开启' : '关闭'} />
+                    <InfoRow label="主题" value={config.darkTheme ? '深色' : '浅色'} />
                 </div>
             </div>
         </div>

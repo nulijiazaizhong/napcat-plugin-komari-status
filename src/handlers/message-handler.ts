@@ -13,38 +13,9 @@
 import type { OB11Message, OB11PostSendMsg } from 'napcat-types/napcat-onebot';
 import type { NapCatPluginContext } from 'napcat-types/napcat-onebot/network/plugin/types';
 import { pluginState } from '../core/state';
+import { getNodesStatus, getRealtimeStatus, getPublicSettings, getVersionInfo } from '../services/komari';
 
-// ==================== CD 冷却管理 ====================
-
-/** CD 冷却记录 key: `${groupId}:${command}`, value: 过期时间戳 */
-const cooldownMap = new Map<string, number>();
-
-/**
- * 检查是否在 CD 中
- * @returns 剩余秒数，0 表示可用
- */
-function getCooldownRemaining(groupId: number | string, command: string): number {
-    const cdSeconds = pluginState.config.cooldownSeconds ?? 60;
-    if (cdSeconds <= 0) return 0;
-
-    const key = `${groupId}:${command}`;
-    const expireTime = cooldownMap.get(key);
-    if (!expireTime) return 0;
-
-    const remaining = Math.ceil((expireTime - Date.now()) / 1000);
-    if (remaining <= 0) {
-        cooldownMap.delete(key);
-        return 0;
-    }
-    return remaining;
-}
-
-/** 设置 CD 冷却 */
-function setCooldown(groupId: number | string, command: string): void {
-    const cdSeconds = pluginState.config.cooldownSeconds ?? 60;
-    if (cdSeconds <= 0) return;
-    cooldownMap.set(`${groupId}:${command}`, Date.now() + cdSeconds * 1000);
-}
+// ==================== 预留：可选冷却机制 ====================
 
 // ==================== 消息发送工具 ====================
 
@@ -202,8 +173,40 @@ export async function handleMessage(ctx: NapCatPluginContext, event: OB11Message
             if (!pluginState.isGroupEnabled(String(groupId))) return;
         }
 
-        // 检查命令前缀
-        const prefix = pluginState.config.commandPrefix || '#cmd';
+        // Komari 触发（正则）
+        const cfg = pluginState.config;
+        const nodesRe = new RegExp(cfg.triggerNodes, 'i');
+        const rtRe = new RegExp(cfg.triggerRealtime, 'i');
+        const pubRe = new RegExp(cfg.triggerPublic, 'i');
+        const verRe = new RegExp(cfg.triggerVersion, 'i');
+
+        if (nodesRe.test(rawMessage)) {
+            const resp = await getNodesStatus();
+            await sendReply(ctx, event, (resp as any).text || (resp as any).error || '未知错误');
+            pluginState.incrementProcessed();
+            return;
+        }
+        if (rtRe.test(rawMessage)) {
+            const resp = await getRealtimeStatus();
+            await sendReply(ctx, event, (resp as any).text || (resp as any).error || '未知错误');
+            pluginState.incrementProcessed();
+            return;
+        }
+        if (pubRe.test(rawMessage)) {
+            const text = await getPublicSettings();
+            await sendReply(ctx, event, text);
+            pluginState.incrementProcessed();
+            return;
+        }
+        if (verRe.test(rawMessage)) {
+            const text = await getVersionInfo();
+            await sendReply(ctx, event, text);
+            pluginState.incrementProcessed();
+            return;
+        }
+
+        // 以下为模板命令前缀示例，可保留
+        const prefix = '#cmd';
         if (!rawMessage.startsWith(prefix)) return;
 
         // 解析命令参数
