@@ -74,20 +74,62 @@ export default function ConfigPage() {
                         checked={config.debug}
                         onChange={(v) => updateField('debug', v)}
                     />
+                    {/* Komari 专属配置 */}
                     <InputRow
-                        label="命令前缀"
-                        desc="触发命令的前缀"
-                        value={config.commandPrefix}
-                        onChange={(v) => updateField('commandPrefix', v)}
+                        label="Komari 服务器地址"
+                        desc="如 https://status.example.com"
+                        value={config.komariUrl}
+                        onChange={(v) => updateField('komariUrl', v)}
                     />
                     <InputRow
-                        label="冷却时间 (秒)"
-                        desc="同一命令请求冷却时间，0 表示不限制"
-                        value={String(config.cooldownSeconds)}
+                        label="API Token（可选）"
+                        desc="API Key 或 Session Token"
+                        value={config.komariToken ?? ''}
+                        onChange={(v) => updateField('komariToken', v)}
+                    />
+                    <ToggleRow
+                        label="以图片形式发送"
+                        desc="NapCat 暂以文本输出代替"
+                        checked={config.imageOutput}
+                        onChange={(v) => updateField('imageOutput', v)}
+                    />
+                    <ToggleRow
+                        label="深色主题"
+                        desc="用于前端/图片渲染"
+                        checked={config.darkTheme}
+                        onChange={(v) => updateField('darkTheme', v)}
+                    />
+                    <InputRow
+                        label="图片宽度"
+                        desc="用于图片渲染的视口宽度"
+                        value={String(config.viewportWidth)}
                         type="number"
-                        onChange={(v) => updateField('cooldownSeconds', Number(v) || 0)}
+                        onChange={(v) => updateField('viewportWidth', Number(v) || 600)}
                     />
-                    {/* TODO: 在这里添加你的配置项 */}
+                    <InputRow
+                        label="节点状态指令(正则)"
+                        desc="自定义触发指令"
+                        value={config.triggerNodes}
+                        onChange={(v) => updateField('triggerNodes', v)}
+                    />
+                    <InputRow
+                        label="实时状态指令(正则)"
+                        desc="自定义触发指令"
+                        value={config.triggerRealtime}
+                        onChange={(v) => updateField('triggerRealtime', v)}
+                    />
+                    <InputRow
+                        label="公开设置指令(正则)"
+                        desc="自定义触发指令"
+                        value={config.triggerPublic}
+                        onChange={(v) => updateField('triggerPublic', v)}
+                    />
+                    <InputRow
+                        label="版本信息指令(正则)"
+                        desc="自定义触发指令"
+                        value={config.triggerVersion}
+                        onChange={(v) => updateField('triggerVersion', v)}
+                    />
                 </div>
             </div>
 

@@ -224,9 +224,9 @@ export async function getRealtimeStatus(): Promise<{ text: string } | { error: s
             // 补全静态信息
             const lookup = node.uuid || node.id;
             if (lookup && staticNodes[lookup]) {
-                const static = staticNodes[lookup];
+                const staticInfo = staticNodes[lookup];
                 for (const k of ['name', 'region', 'os', 'cpu_name', 'cpu_cores', 'mem_total', 'disk_total']) {
-                    if (!node[k] && static[k]) node[k] = static[k];
+                    if (!node[k] && staticInfo[k]) node[k] = staticInfo[k];
                 }
             }
 
