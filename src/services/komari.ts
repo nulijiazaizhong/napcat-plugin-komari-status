@@ -210,7 +210,11 @@ export async function getRealtimeStatus(): Promise<{ text: string } | { error: s
             const online = Array.isArray(payload.online) ? payload.online : [];
             const details = (payload.data && typeof payload.data === 'object') ? payload.data : {};
             for (const uuid of online.slice(0, 10)) {
-                nodes.push(details[uuid] || { uuid });
+                const nodeData = details[uuid] || {};
+                if (typeof nodeData === 'object') {
+                    nodeData.uuid = uuid;
+                }
+                nodes.push(nodeData);
             }
         }
 
@@ -225,8 +229,15 @@ export async function getRealtimeStatus(): Promise<{ text: string } | { error: s
             const lookup = node.uuid || node.id;
             if (lookup && staticNodes[lookup]) {
                 const staticInfo = staticNodes[lookup];
-                for (const k of ['name', 'region', 'os', 'cpu_name', 'cpu_cores', 'mem_total', 'disk_total']) {
-                    if (!node[k] && staticInfo[k]) node[k] = staticInfo[k];
+                for (const k in staticInfo) {
+                    if ((node as any)[k] === undefined || (node as any)[k] === null) {
+                        (node as any)[k] = staticInfo[k];
+                    }
+                }
+                
+                // 特殊处理 name
+                if (!node.name || node.name === 'Unknown') {
+                    node.name = staticInfo.name;
                 }
             }
 
